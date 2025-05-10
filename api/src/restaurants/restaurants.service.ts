@@ -84,6 +84,20 @@ export class RestaurantsService {
       );
     }
 
+    if (lat < -90 || lat > 90) {
+      throw new BusinessLogicException(
+        'Latitude must be between -90 and 90 degrees',
+        BusinessError.BAD_REQUEST,
+      );
+    }
+
+    if (lon < -180 || lon > 180) {
+      throw new BusinessLogicException(
+        'Longitude must be between -180 and 180 degrees',
+        BusinessError.BAD_REQUEST,
+      );
+    }
+
     const headers = {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': this.apiKey,
