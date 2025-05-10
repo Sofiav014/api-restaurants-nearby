@@ -49,7 +49,7 @@ jobs:
       - name: Wait for API to be healthy
         uses: jtalk/url-health-check-action@v3
         with:
-          url: http://localhost:3000/api/v1/healthcheck
+          url: http://localhost:3000/api/v1/
           follow-redirect: false
           max-attempts: 10
           retry-delay: 5s
