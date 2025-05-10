@@ -1,0 +1,66 @@
+name: Run API Tests with Docker
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  evaluate_api:
+    runs-on: ubuntu-latest
+    environment: .env
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install newman
+        run: npm install -g newman
+
+      - name: Create .env file from GitHub secrets
+        run: |
+          cat <<EOF > .env
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          REDIS_HOST=${{ secrets.REDIS_HOST }}
+          REDIS_PORT=${{ secrets.REDIS_PORT }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}
+          GEOCODING_API_URL=${{ secrets.GEOCODING_API_URL }}
+          PLACES_API_URL=${{ secrets.PLACES_API_URL }}
+          MAPS_PLATFORM_API_KEY=${{ secrets.MAPS_PLATFORM_API_KEY }}
+          EOF
+
+      - name: Start Docker containers
+        run: docker compose up -d
+
+      - name: Wait for API to be healthy
+        uses: jtalk/url-health-check-action@v3
+        with:
+          url: http://localhost:3000/api/v1/healthcheck
+          follow-redirect: false
+          max-attempts: 10
+          retry-delay: 5s
+
+      - name: Run Postman tests
+        run: |
+          for collection in ./api/collections/*.json; do
+            echo "Running collection: $collection"
+            newman run "$collection" --verbose
+          done
+
+      - name: Stop Docker containers
+        if: always()
+        run: docker compose down
