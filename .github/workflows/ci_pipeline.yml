@@ -29,14 +29,29 @@ jobs:
         working-directory: ./api
         run: npm run test:cov
 
-        
-  postman-tests:
+
+    postman-tests:
     runs-on: ubuntu-latest
     needs: unit-tests
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: ./api
+        run: npm install
+
+      - name: Start API in background
+        working-directory: ./api
+        run: |
+          npm run start &  
+          sleep 10  
 
       - name: Install Newman
         run: npm install -g newman
@@ -47,3 +62,4 @@ jobs:
             echo "Running collection: $collection"
             newman run "$collection"
           done
+
