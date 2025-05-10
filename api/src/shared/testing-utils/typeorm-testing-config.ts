@@ -1,5 +1,4 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TokenBlacklistEntity } from '../../token-blacklist/entities/token-blacklist.entity';
 import { TransactionEntity } from '../../transactions/entities/transaction.entity';
 import { UserEntity } from '../../users/entities/user.entity';
 
@@ -14,6 +13,5 @@ export const TypeOrmTestingConfig = () => [
   TypeOrmModule.forFeature([
     UserEntity,
     TransactionEntity,
-    TokenBlacklistEntity,
   ]),
 ];

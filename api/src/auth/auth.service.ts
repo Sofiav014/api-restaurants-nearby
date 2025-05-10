@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { TokenBlacklistService } from '../token-blacklist/token-blacklist.service';
+import { RedisService } from 'src/redis/redis.service';
 import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 
@@ -16,13 +16,12 @@ export class AuthService {
    * @param usersService - Service for managing user-related operations.
    * @param jwtService - Service for handling JSON Web Token (JWT) operations.
    * @param configService - Service for accessing application configuration.
-   * @param tokenBlacklistService - Service for managing blacklisted tokens.
    */
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private tokenBlacklistService: TokenBlacklistService,
+    private readonly redisService: RedisService,
   ) {}
 
   /**
@@ -52,22 +51,26 @@ export class AuthService {
    */
   async login(req: any) {
     const payload = { username: req.user.username, sub: req.user.id };
-    return {
-      token: this.jwtService.sign(payload, {
+    const token = this.jwtService.sign(payload, {
         secret: this.configService.get('jwt.secret'),
         expiresIn: this.configService.get('jwt.expiresIn'),
-      }),
+      });
+    
+    await this.redisService.set(req.user.id, token);
+    
+    return {
+      token: token
     };
   }
 
   /**
-   * Logs out a user by blacklisting their JWT token.
+   * Logs out a user by removing their session data from the Redis.
    *
-   * @param req - The request object containing the user's authorization header.
+   * @param user_id - The unique identifier of the user to log out.
+   * @returns A promise that resolves when the user's session data has been removed.
    */
-  async logout(req: any) {
-    const bearerToken = req.headers['authorization'];
-    const token = bearerToken.split(' ')[1];
-    await this.tokenBlacklistService.putTokenInBlacklist(token);
+  async logout(user_id: string) {
+    console.log('Logging out user with ID:', user_id);
+    await this.redisService.del(user_id);
   }
 }

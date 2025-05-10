@@ -1,7 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TokenBlacklistService } from '../token-blacklist/token-blacklist.service';
 import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
@@ -33,10 +32,6 @@ describe('AuthService', () => {
     }),
   };
 
-  const mockTokenBlacklistService = {
-    putTokenInBlacklist: jest.fn(),
-  };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -52,10 +47,6 @@ describe('AuthService', () => {
         {
           provide: ConfigService,
           useValue: mockConfigService,
-        },
-        {
-          provide: TokenBlacklistService,
-          useValue: mockTokenBlacklistService,
         },
       ],
     }).compile();
@@ -115,22 +106,6 @@ describe('AuthService', () => {
       );
       expect(mockConfigService.get).toHaveBeenCalledWith('jwt.secret');
       expect(mockConfigService.get).toHaveBeenCalledWith('jwt.expiresIn');
-    });
-  });
-
-  describe('logout', () => {
-    it('should blacklist the token on logout', async () => {
-      const mockRequest = {
-        headers: {
-          authorization: 'Bearer validToken',
-        },
-      };
-
-      await service.logout(mockRequest);
-
-      expect(
-        mockTokenBlacklistService.putTokenInBlacklist,
-      ).toHaveBeenCalledWith('validToken');
     });
   });
 });

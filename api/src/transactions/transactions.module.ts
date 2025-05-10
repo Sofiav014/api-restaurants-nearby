@@ -5,9 +5,10 @@ import { UsersService } from '../users/users.service';
 import { TransactionEntity } from './entities/transaction.entity';
 import { TransactionsController } from './transactions.controller';
 import { TransactionsService } from './transactions.service';
+import { RedisModule } from 'src/redis/redis.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TransactionEntity, UserEntity])],
+  imports: [TypeOrmModule.forFeature([TransactionEntity, UserEntity]), RedisModule],
   controllers: [TransactionsController],
   providers: [TransactionsService, UsersService],
   exports: [TransactionsService],

@@ -4,19 +4,20 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import mapsConfig from './config/apis/maps.config';
+import authConfig from './config/auth/auth.config';
 import { databaseConfig } from './config/database/database.config';
+import redisConfig from './config/database/redis.config';
 import { RestaurantsModule } from './restaurants/restaurants.module';
-import { TokenBlacklistsModule } from './token-blacklist/token-blacklist.module';
 import { TransactionsMiddleware } from './transactions/transactions.middleware';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
-import authConfig from './config/auth/auth.config';
-import mapsConfig from './config/apis/maps.config';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [mapsConfig, authConfig],
+      load: [mapsConfig, authConfig, redisConfig],
     }),
     ScheduleModule.forRoot(),
     databaseConfig(),
@@ -24,7 +25,7 @@ import mapsConfig from './config/apis/maps.config';
     AuthModule,
     RestaurantsModule,
     TransactionsModule,
-    TokenBlacklistsModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

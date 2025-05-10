@@ -3,8 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'; // Import ConfigSe
 import { JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TokenBlacklistEntity } from '../token-blacklist/entities/token-blacklist.entity';
-import { TokenBlacklistService } from '../token-blacklist/token-blacklist.service';
+import { RedisModule } from 'src/redis/redis.module';
 import { UserEntity } from '../users/entities/user.entity';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
@@ -17,7 +16,8 @@ import { LocalStrategy } from './strategies/local.strategy';
     UsersModule,
     PassportModule,
     ConfigModule,
-    TypeOrmModule.forFeature([UserEntity, TokenBlacklistEntity]),
+    TypeOrmModule.forFeature([UserEntity]),
+    RedisModule,
   ],
   providers: [
     AuthService,
@@ -26,7 +26,6 @@ import { LocalStrategy } from './strategies/local.strategy';
     JwtStrategy,
     LocalStrategy,
     ConfigService,
-    TokenBlacklistService,
   ],
   exports: [AuthService],
 })

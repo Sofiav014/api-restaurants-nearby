@@ -11,6 +11,7 @@ import {
 } from '../shared/security/password-utils';
 import { UserDto } from './dto/user.dto';
 import { UserEntity } from './entities/user.entity';
+import { RedisService } from 'src/redis/redis.service';
 
 /**
  * Service responsible for managing user-related operations.
@@ -25,6 +26,7 @@ export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly redisService: RedisService,
   ) {}
 
   /**

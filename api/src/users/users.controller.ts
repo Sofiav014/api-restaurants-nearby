@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
+import { getUserIdFromToken } from 'src/shared/security/user-utils';
 
 /**
  * Controller for managing user-related operations.
@@ -116,6 +117,9 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Req() req) {
-    return this.authService.logout(req);
+
+    const token = req.headers.authorization.split(' ')[1];
+    const user_id = getUserIdFromToken(token);
+    return this.authService.logout(user_id);
   }
 }
