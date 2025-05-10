@@ -202,4 +202,18 @@ describe('remove', () => {
     );
   });
 });
+describe('login - Invalid Password', () => {
+  it('should throw an UnauthorizedException if the password is invalid', async () => {
+    const user = { id: 1, username: 'testuser', password: 'hashedPassword' };
+    mockUserRepository.findOne.mockResolvedValue(user);
+    (comparePassword as jest.Mock).mockResolvedValue(false);
+
+    await expect(service.login('testuser', 'WrongPassword')).rejects.toThrow(
+      new UnauthorizedException('Invalid credentials'),
+    );
+
+    expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { username: 'testuser' } });
+    expect(comparePassword).toHaveBeenCalledWith('WrongPassword', 'hashedPassword');
+  });
+});
 });
