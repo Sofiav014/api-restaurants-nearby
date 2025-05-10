@@ -18,9 +18,9 @@ export class RestaurantsService {
    */
   constructor(private readonly configService: ConfigService) {}
 
-  apiKey = this.configService.get('places.apiKey');
-  placesApiUrl = this.configService.get('places.apiUrl');
-  geoCodingApiUrl = this.configService.get('places.geoCodingApiUrl');
+  apiKey = this.configService.get('maps.apiKey');
+  placesApiUrl = this.configService.get('maps.apiUrl');
+  geoCodingApiUrl = this.configService.get('maps.geoCodingApiUrl');
 
   /**
    * Retrieves a list of restaurants near a specified city.

@@ -153,25 +153,25 @@ describe('TransactionsController', () => {
 
     it('should throw an error if the authorization token is invalid', async () => {
       const req: any = {
-      headers: {
-        authorization: 'Bearer invalidToken',
-      },
+        headers: {
+          authorization: 'Bearer invalidToken',
+        },
       };
 
       jest
-      .spyOn(require('../shared/security/user-utils'), 'getUserIdFromToken')
-      .mockImplementation(() => {
-        throw new Error('Invalid token');
-      });
+        .spyOn(require('../shared/security/user-utils'), 'getUserIdFromToken')
+        .mockImplementation(() => {
+          throw new Error('Invalid token');
+        });
 
       await expect(
-      controller.getMyTransactionsByDateRange(
-        new Date('2024-01-01'),
-        new Date('2024-01-31'),
-        req,
-        1,
-        10,
-      ),
+        controller.getMyTransactionsByDateRange(
+          new Date('2024-01-01'),
+          new Date('2024-01-31'),
+          req,
+          1,
+          10,
+        ),
       ).rejects.toThrow('Invalid token');
     });
 
@@ -179,221 +179,220 @@ describe('TransactionsController', () => {
       const paginatedResult = new PaginationResultDto([], 0, 1, 10);
 
       jest
-      .spyOn(service, 'getMyTransactionsByDateRange')
-      .mockResolvedValueOnce(paginatedResult);
+        .spyOn(service, 'getMyTransactionsByDateRange')
+        .mockResolvedValueOnce(paginatedResult);
 
       const req: any = {
-      headers: {
-        authorization: 'Bearer fakeToken',
-      },
+        headers: {
+          authorization: 'Bearer fakeToken',
+        },
       };
 
       jest
-      .spyOn(require('../shared/security/user-utils'), 'getUserIdFromToken')
-      .mockReturnValue('12345');
+        .spyOn(require('../shared/security/user-utils'), 'getUserIdFromToken')
+        .mockReturnValue('12345');
 
       const result = await controller.getMyTransactionsByDateRange(
-      new Date('2024-01-01'),
-      new Date('2024-01-31'),
-      req,
-      1,
-      10,
+        new Date('2024-01-01'),
+        new Date('2024-01-31'),
+        req,
+        1,
+        10,
       );
 
       expect(service.getMyTransactionsByDateRange).toHaveBeenCalledWith(
-      '12345',
-      new Date('2024-01-01'),
-      new Date('2024-01-31'),
-      1,
-      10,
+        '12345',
+        new Date('2024-01-01'),
+        new Date('2024-01-31'),
+        1,
+        10,
       );
       expect(result).toEqual(paginatedResult);
     });
   });
-describe('getAllTransactionsByDateRange', () => {
-  it('should use default pagination values when page and limit are not provided', async () => {
-    const transactions: TransactionEntity[] = [
-      {
-        id: '',
-        user_id: faker.internet.username(),
-        endpoint: faker.internet.url(),
-        method: 'GET',
-        status_code: 200,
-        created_at: new Date(),
-      },
-    ];
+  describe('getAllTransactionsByDateRange', () => {
+    it('should use default pagination values when page and limit are not provided', async () => {
+      const transactions: TransactionEntity[] = [
+        {
+          id: '',
+          user_id: faker.internet.username(),
+          endpoint: faker.internet.url(),
+          method: 'GET',
+          status_code: 200,
+          created_at: new Date(),
+        },
+      ];
 
-    const paginatedResult = new PaginationResultDto(transactions, 1, 1, 10);
+      const paginatedResult = new PaginationResultDto(transactions, 1, 1, 10);
 
-    jest
-      .spyOn(service, 'getAllTransactionsByDateRange')
-      .mockResolvedValueOnce(paginatedResult);
+      jest
+        .spyOn(service, 'getAllTransactionsByDateRange')
+        .mockResolvedValueOnce(paginatedResult);
 
-    const result = await controller.getAllTransactionsByDateRange(
-      new Date('2024-01-01'),
-      new Date('2024-01-31'),
-    );
+      const result = await controller.getAllTransactionsByDateRange(
+        new Date('2024-01-01'),
+        new Date('2024-01-31'),
+      );
 
-    expect(service.getAllTransactionsByDateRange).toHaveBeenCalledWith(
-      new Date('2024-01-01'),
-      new Date('2024-01-31'),
-      1,
-      10,
-    );
-    expect(result).toEqual(paginatedResult);
-  });
+      expect(service.getAllTransactionsByDateRange).toHaveBeenCalledWith(
+        new Date('2024-01-01'),
+        new Date('2024-01-31'),
+        1,
+        10,
+      );
+      expect(result).toEqual(paginatedResult);
+    });
 
-  it('should use provided pagination values when page and limit are specified', async () => {
-    const transactions: TransactionEntity[] = [
-      {
-        id: '',
-        user_id: faker.internet.username(),
-        endpoint: faker.internet.url(),
-        method: 'GET',
-        status_code: 200,
-        created_at: new Date(),
-      },
-    ];
+    it('should use provided pagination values when page and limit are specified', async () => {
+      const transactions: TransactionEntity[] = [
+        {
+          id: '',
+          user_id: faker.internet.username(),
+          endpoint: faker.internet.url(),
+          method: 'GET',
+          status_code: 200,
+          created_at: new Date(),
+        },
+      ];
 
-    const paginatedResult = new PaginationResultDto(transactions, 1, 2, 5);
+      const paginatedResult = new PaginationResultDto(transactions, 1, 2, 5);
 
-    jest
-      .spyOn(service, 'getAllTransactionsByDateRange')
-      .mockResolvedValueOnce(paginatedResult);
+      jest
+        .spyOn(service, 'getAllTransactionsByDateRange')
+        .mockResolvedValueOnce(paginatedResult);
 
-    const result = await controller.getAllTransactionsByDateRange(
-      new Date('2024-01-01'),
-      new Date('2024-01-31'),
-      2,
-      5,
-    );
+      const result = await controller.getAllTransactionsByDateRange(
+        new Date('2024-01-01'),
+        new Date('2024-01-31'),
+        2,
+        5,
+      );
 
-    expect(service.getAllTransactionsByDateRange).toHaveBeenCalledWith(
-      new Date('2024-01-01'),
-      new Date('2024-01-31'),
-      2,
-      5,
-    );
-    expect(result).toEqual(paginatedResult);
-  });
+      expect(service.getAllTransactionsByDateRange).toHaveBeenCalledWith(
+        new Date('2024-01-01'),
+        new Date('2024-01-31'),
+        2,
+        5,
+      );
+      expect(result).toEqual(paginatedResult);
+    });
 
-  it('should return an error message if startDate or endDate is missing', async () => {
+    it('should return an error message if startDate or endDate is missing', async () => {
+      jest
+        .spyOn(require('../shared/security/user-utils'), 'getUserIdFromToken')
+        .mockReturnValue('12345');
 
-    jest
-      .spyOn(require('../shared/security/user-utils'), 'getUserIdFromToken')
-      .mockReturnValue('12345');
-
-    const req: any = {
+      const req: any = {
         headers: {
           authorization: 'Bearer fakeToken' as any,
         },
       };
-    const result = await controller.getMyTransactionsByDateRange(
-      null,
-      new Date('2024-01-31'),
-      req,
-      1,
-      10,
-    );
-    expect(result).toEqual('Please provide a start and end date');
+      const result = await controller.getMyTransactionsByDateRange(
+        null,
+        new Date('2024-01-31'),
+        req,
+        1,
+        10,
+      );
+      expect(result).toEqual('Please provide a start and end date');
+    });
   });
-});
 
-describe('getMyTransactionsByDateRange', () => {
-  it('should use default pagination values when page and limit are not provided', async () => {
-    const transactions: TransactionEntity[] = [
-      {
-        id: '',
-        user_id: faker.internet.username(),
-        endpoint: faker.internet.url(),
-        method: 'GET',
-        status_code: 200,
-        created_at: new Date(),
-      },
-    ];
+  describe('getMyTransactionsByDateRange', () => {
+    it('should use default pagination values when page and limit are not provided', async () => {
+      const transactions: TransactionEntity[] = [
+        {
+          id: '',
+          user_id: faker.internet.username(),
+          endpoint: faker.internet.url(),
+          method: 'GET',
+          status_code: 200,
+          created_at: new Date(),
+        },
+      ];
 
-    const paginatedResult = new PaginationResultDto(transactions, 1, 1, 10);
+      const paginatedResult = new PaginationResultDto(transactions, 1, 1, 10);
 
-    jest
-      .spyOn(service, 'getMyTransactionsByDateRange')
-      .mockResolvedValueOnce(paginatedResult);
+      jest
+        .spyOn(service, 'getMyTransactionsByDateRange')
+        .mockResolvedValueOnce(paginatedResult);
 
-    const req: any = {
+      const req: any = {
         headers: {
           authorization: 'Bearer fakeToken' as any,
         },
       };
 
-    const result = await controller.getMyTransactionsByDateRange(
-      new Date('2024-01-01'),
-      new Date('2024-01-31'),
-      req,
-    );
+      const result = await controller.getMyTransactionsByDateRange(
+        new Date('2024-01-01'),
+        new Date('2024-01-31'),
+        req,
+      );
 
-    expect(service.getMyTransactionsByDateRange).toHaveBeenCalledWith(
-      '12345',
-      new Date('2024-01-01'),
-      new Date('2024-01-31'),
-      1,
-      10,
-    );
-    expect(result).toEqual(paginatedResult);
-  });
+      expect(service.getMyTransactionsByDateRange).toHaveBeenCalledWith(
+        '12345',
+        new Date('2024-01-01'),
+        new Date('2024-01-31'),
+        1,
+        10,
+      );
+      expect(result).toEqual(paginatedResult);
+    });
 
-  it('should use provided pagination values when page and limit are specified', async () => {
-    const transactions: TransactionEntity[] = [
-      {
-        id: '',
-        user_id: faker.internet.username(),
-        endpoint: faker.internet.url(),
-        method: 'GET',
-        status_code: 200,
-        created_at: new Date(),
-      },
-    ];
+    it('should use provided pagination values when page and limit are specified', async () => {
+      const transactions: TransactionEntity[] = [
+        {
+          id: '',
+          user_id: faker.internet.username(),
+          endpoint: faker.internet.url(),
+          method: 'GET',
+          status_code: 200,
+          created_at: new Date(),
+        },
+      ];
 
-    const paginatedResult = new PaginationResultDto(transactions, 1, 2, 5);
+      const paginatedResult = new PaginationResultDto(transactions, 1, 2, 5);
 
-    jest
-      .spyOn(service, 'getMyTransactionsByDateRange')
-      .mockResolvedValueOnce(paginatedResult);
-    const req: any = {
+      jest
+        .spyOn(service, 'getMyTransactionsByDateRange')
+        .mockResolvedValueOnce(paginatedResult);
+      const req: any = {
         headers: {
           authorization: 'Bearer fakeToken' as any,
         },
       };
-    const result = await controller.getMyTransactionsByDateRange(
-      new Date('2024-01-01'),
-      new Date('2024-01-31'),
-      req,
-      2,
-      5,
-    );
+      const result = await controller.getMyTransactionsByDateRange(
+        new Date('2024-01-01'),
+        new Date('2024-01-31'),
+        req,
+        2,
+        5,
+      );
 
-    expect(service.getMyTransactionsByDateRange).toHaveBeenCalledWith(
-      '12345',
-      new Date('2024-01-01'),
-      new Date('2024-01-31'),
-      2,
-      5,
-    );
-    expect(result).toEqual(paginatedResult);
-  });
+      expect(service.getMyTransactionsByDateRange).toHaveBeenCalledWith(
+        '12345',
+        new Date('2024-01-01'),
+        new Date('2024-01-31'),
+        2,
+        5,
+      );
+      expect(result).toEqual(paginatedResult);
+    });
 
-  it('should return an error message if startDate or endDate is missing', async () => {
-    const req: any = {
+    it('should return an error message if startDate or endDate is missing', async () => {
+      const req: any = {
         headers: {
           authorization: 'Bearer fakeToken' as any,
         },
       };
-    const result = await controller.getMyTransactionsByDateRange(
-      null,
-      new Date('2024-01-31'),
-      req,
-      1,
-      10,
-    );
-    expect(result).toEqual('Please provide a start and end date');
+      const result = await controller.getMyTransactionsByDateRange(
+        null,
+        new Date('2024-01-31'),
+        req,
+        1,
+        10,
+      );
+      expect(result).toEqual('Please provide a start and end date');
+    });
   });
-});
 });
