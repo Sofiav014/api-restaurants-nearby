@@ -58,18 +58,18 @@ Recuerda seguir las mejores prácticas de ingeniería. Prestamos especial atenci
    JWT_EXPIRES_IN=
    ```
 
-   > [!NOTE]  
-   > Los valores seran enviados por correo
+> [!NOTE]  
+> Los valores seran enviados por correo
 
-4. Ejecuta el siguente comando
+5. Ejecuta el siguente comando
 
    ```shell
    docker compose up -d
    ```
 
-5. El servicio estará disponible en la siguiente URL: http://localhost:3000/api
+6. El servicio estará disponible en la siguiente URL: http://localhost:3000/api
 
-6. Para detener el servicio, ejecuta el siguiente comando:
+7. Para detener el servicio, ejecuta el siguiente comando:
 
    ```shell
    docker compose down
