@@ -23,11 +23,11 @@ describe('RestaurantsService', () => {
           useValue: {
             get: jest.fn((key: string) => {
               switch (key) {
-                case 'places.apiKey':
+                case 'maps.apiKey':
                   return 'test-api-key';
-                case 'places.apiUrl':
+                case 'maps.apiUrl':
                   return 'https://mock-places-api.com';
-                case 'places.geoCodingApiUrl':
+                case 'maps.geoCodingApiUrl':
                   return 'https://mock-geocoding-api.com';
                 default:
                   return null;
@@ -47,7 +47,6 @@ describe('RestaurantsService', () => {
 
   describe('getRestaurantsNearCity', () => {
     it('should return restaurants when the city is found', async () => {
-      // Mock the axios response for the geocoding API
       mockedAxios.get.mockResolvedValueOnce({
         data: {
           results: [
