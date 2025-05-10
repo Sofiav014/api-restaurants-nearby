@@ -3,9 +3,29 @@ import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 
 @Injectable()
+/**
+ * A service for interacting with a Redis database. This service provides methods
+ * for storing, retrieving, deleting, and checking the existence of key-value pairs
+ * in the Redis database. It uses a Redis client instance to execute commands and
+ * manage the connection.
+ */
 export class RedisService {
+  /**
+   * Represents the Redis client instance used to interact with the Redis database.
+   * This client is responsible for executing Redis commands and managing the connection.
+   */
   private client: Redis;
 
+  /**
+   * Initializes a new instance of the Redis service.
+   * 
+   * @param configService - The configuration service used to retrieve Redis connection details.
+   * 
+   * The Redis client is configured using the following properties from the configuration service:
+   * - `redis.host`: The hostname or IP address of the Redis server.
+   * - `redis.port`: The port number on which the Redis server is running.
+   * - `redis.password`: The password for authenticating with the Redis server.
+   */
   constructor(private configService: ConfigService) {
     this.client = new Redis({
       host: this.configService.get('redis.host'),
@@ -14,54 +34,56 @@ export class RedisService {
     });
   }
 
+  /**
+   * Stores a key-value pair in the Redis database with an optional expiration time.
+   *
+   * @param key - The key under which the value will be stored.
+   * @param value - The value to be stored.
+   * @param expirationInSeconds - (Optional) The expiration time in seconds. 
+   * If provided, the key-value pair will expire after the specified time.
+   * If not provided, the key-value pair will persist indefinitely.
+   * @returns A promise that resolves when the operation is complete.
+   */
   async set(
     key: string,
     value: string,
     expirationInSeconds?: number,
   ): Promise<void> {
-    console.log('Setting key:', key, 'with value:', value);
     if (expirationInSeconds) {
       await this.client.set(key, value, 'EX', expirationInSeconds);
     } else {
       await this.client.set(key, value);
     }
-    console.log('Key set successfully');
   }
 
+  /**
+   * Retrieves the value associated with the specified key from the Redis database.
+   *
+   * @param key - The key whose associated value is to be retrieved.
+   * @returns A promise that resolves to the value as a string if the key exists,
+   *          or `null` if the key does not exist.
+   */
   async get(key: string): Promise<string | null> {
-    console.log('Getting key:', key);
-    const value = await this.client.get(key);
-    if (value) {
-      console.log('Key found:', key, 'with value:', value);
-    }
-    if (!value) {
-      console.log('Key not found:', key);
-    }
-    return value;
-    // return await this.client.get(key);
+    return await this.client.get(key);
   }
 
+  /**
+   * Deletes a key from the Redis database.
+   *
+   * @param key - The key to be deleted from the Redis database.
+   * @returns A promise that resolves to the number of keys that were removed.
+   */
   async del(key: string): Promise<number> {
-    console.log('Deleting key:', key);
-    const result = await this.client.del(key);
-    if (result) {
-      console.log('Key deleted successfully:', key);
-    } else {
-      console.log('Key not found for deletion:', key);
-    }
-    return result;
-    // return await this.client.del(key);
+    return await this.client.del(key);
   }
 
+  /**
+   * Checks if a given key exists in the Redis database.
+   *
+   * @param key - The key to check for existence in the Redis database.
+   * @returns A promise that resolves to the number of keys that exist (0 if the key does not exist, 1 if it does).
+   */
   async exists(key: string): Promise<number> {
-    console.log('Checking existence of key:', key);
-    const exists = await this.client.exists(key);
-    if (exists) {
-      console.log('Key exists:', key);
-    } else {
-      console.log('Key does not exist:', key);
-    }
-    return exists;
-    // return await this.client.exists(key);
+    return await this.client.exists(key);
   }
 }

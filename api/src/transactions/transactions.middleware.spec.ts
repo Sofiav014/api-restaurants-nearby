@@ -32,7 +32,6 @@ describe('TransactionsMiddleware', () => {
     };
     const next = jest.fn();
 
-    // Mock the current date
     const mockDate = new Date('2025-05-10T03:51:51.377Z');
     jest.spyOn(global, 'Date').mockImplementation(() => mockDate as any);
 
@@ -43,12 +42,11 @@ describe('TransactionsMiddleware', () => {
       endpoint: '/api/v1/restaurants',
       method: 'GET',
       status_code: 200,
-      created_at: mockDate, // Use the mocked date
+      created_at: mockDate, 
       id: undefined,
     });
     expect(next).toHaveBeenCalled();
 
-    // Restore the original Date implementation
     jest.restoreAllMocks();
   });
 

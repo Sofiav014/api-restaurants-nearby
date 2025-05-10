@@ -24,13 +24,13 @@ describe('AuthService', () => {
         {
           provide: UsersService,
           useValue: {
-            login: jest.fn().mockResolvedValue(mockUser), // Mock login
+            login: jest.fn().mockResolvedValue(mockUser),
           },
         },
         {
           provide: JwtService,
           useValue: {
-            sign: jest.fn().mockReturnValue(mockJwtToken), // Mock sign method of JwtService
+            sign: jest.fn().mockReturnValue(mockJwtToken), 
           },
         },
         {
@@ -46,8 +46,8 @@ describe('AuthService', () => {
         {
           provide: RedisService,
           useValue: {
-            set: jest.fn().mockResolvedValue(true), // Mock set in Redis
-            del: jest.fn().mockResolvedValue(true), // Mock del in Redis
+            set: jest.fn().mockResolvedValue(true), 
+            del: jest.fn().mockResolvedValue(true),
           },
         },
       ],

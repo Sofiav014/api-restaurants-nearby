@@ -4,7 +4,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RestaurantsController } from './restaurants.controller';
 import { RestaurantsService } from './restaurants.service';
 
-// Mock the JwtAuthGuard to always pass
 const mockJwtAuthGuard = {
   canActivate: jest.fn(() => true),
 };
@@ -65,7 +64,6 @@ describe('RestaurantsController', () => {
         ],
       };
 
-      // Mock service method
       (service.getRestaurantsNearCity as jest.Mock).mockResolvedValue(
         mockRestaurants,
       );
@@ -111,7 +109,6 @@ describe('RestaurantsController', () => {
         ],
       };
 
-      // Mock service method
       (service.getRestaurantsByCoordinates as jest.Mock).mockResolvedValue(
         mockRestaurants,
       );

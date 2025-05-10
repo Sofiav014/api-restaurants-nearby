@@ -54,7 +54,6 @@ describe('TransactionsController', () => {
 
       const paginatedResult = new PaginationResultDto(transactions, 1, 1, 10);
 
-      // Mock the service call
       jest
         .spyOn(service, 'getAllTransactionsByDateRange')
         .mockResolvedValueOnce(paginatedResult);

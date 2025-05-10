@@ -7,7 +7,6 @@ import {
 } from '../shared/errors/business-errors';
 import { RestaurantsService } from './restaurants.service';
 
-// Mock axios
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -59,7 +58,6 @@ describe('RestaurantsService', () => {
         },
       });
 
-      // Mock the axios response for the places API
       mockedAxios.post.mockResolvedValueOnce({
         data: {
           places: [
@@ -147,7 +145,6 @@ describe('RestaurantsService', () => {
 
   describe('getRestaurantsByCoordinates', () => {
     it('should return restaurants when given valid coordinates', async () => {
-      // Mock the axios response for the places API
       mockedAxios.post.mockResolvedValueOnce({
         data: {
           places: [
@@ -242,7 +239,7 @@ describe('RestaurantsService', () => {
 
     it('should throw a BusinessLogicException if no restaurants are found in the specified area', async () => {
       mockedAxios.post.mockResolvedValueOnce({
-        data: {}, // Simulate an empty response
+        data: {}, 
       });
 
       await expect(

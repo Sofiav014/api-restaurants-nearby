@@ -12,7 +12,6 @@ async function bootstrap() {
     defaultVersion: '1',
   });
 
-  // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('Tyba Backend Engineer test API')
     .setDescription('Developed by Sofia Velasquez Marin')
