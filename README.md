@@ -50,6 +50,10 @@ Recuerda seguir las mejores prácticas de ingeniería. Prestamos especial atenci
    POSTGRES_PASSWORD=
    POSTGRES_DB=
 
+   REDIS_HOST=
+   REDIS_PORT=
+   REDIS_PASSWORD=
+
    MAPS_PLATFORM_API_KEY=
    PLACES_API_URL=
    GEOCODING_API_URL=
