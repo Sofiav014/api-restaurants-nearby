@@ -4,18 +4,19 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import placesConfig from './config/apis/maps.config';
-import authConfig from './config/auth/auth.config';
 import { databaseConfig } from './config/database/database.config';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { TokenBlacklistsModule } from './token-blacklist/token-blacklist.module';
 import { TransactionsMiddleware } from './transactions/transactions.middleware';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
+import authConfig from './config/auth/auth.config';
+import mapsConfig from './config/apis/maps.config';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [authConfig, placesConfig],
+      load: [mapsConfig, authConfig],
     }),
     ScheduleModule.forRoot(),
     databaseConfig(),
