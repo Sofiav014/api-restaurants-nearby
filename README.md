@@ -114,3 +114,7 @@ También las puedes ejecutar con el siguiente comando:
 ```shell
 npm run test:newman
 ```
+
+## Documentación Adicional
+
+Puedes encontrarla en la [wiki](https://github.com/Sofiav014/api-restaurants-nearby/wiki) del repositorio.
