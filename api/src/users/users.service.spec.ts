@@ -1,176 +1,205 @@
-import { faker } from '@faker-js/faker';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  comparePassword,
-  hashPassword,
-} from '../shared/security/password-utils';
-import { TypeOrmTestingConfig } from '../shared/testing-utils/typeorm-testing-config';
+import { RedisService } from '../redis/redis.service';
+import { comparePassword, hashPassword } from '../shared/security/password-utils';
 import { UserEntity } from './entities/user.entity';
 import { UsersService } from './users.service';
 
+import {
+  BusinessError,
+  BusinessLogicException,
+} from '../shared/errors/business-errors';
+
 jest.mock('../shared/security/password-utils');
+
 describe('UsersService', () => {
-  let service: UsersService;
-  let repository: Repository<UserEntity>;
-  let usersList: UserEntity[];
+let service: UsersService;
+let userRepository: Repository<UserEntity>;
+let redisService: RedisService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [...TypeOrmTestingConfig()],
-      providers: [UsersService],
-    }).compile();
+const mockUserRepository = {
+  findOne: jest.fn(),
+  create: jest.fn(),
+  save: jest.fn(),
+  find: jest.fn(),
+  remove: jest.fn(),
+};
 
-    service = module.get<UsersService>(UsersService);
-    repository = module.get<Repository<UserEntity>>(
-      getRepositoryToken(UserEntity),
-    );
-    await seedDatabase();
+const mockRedisService = {
+  get: jest.fn(),
+  set: jest.fn(),
+};
+
+beforeEach(async () => {
+  const module: TestingModule = await Test.createTestingModule({
+    providers: [
+      UsersService,
+      {
+        provide: getRepositoryToken(UserEntity),
+        useValue: mockUserRepository,
+      },
+      {
+        provide: RedisService,
+        useValue: mockRedisService,
+      },
+    ],
+  }).compile();
+
+  service = module.get<UsersService>(UsersService);
+  userRepository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity));
+  redisService = module.get<RedisService>(RedisService);
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+describe('create', () => {
+  it('should create a new user', async () => {
+    const createUserDto = { username: 'testuser', password: 'Test@1234', name: 'Test User' };
+    const hashedPassword = 'hashedPassword';
+    const newUser = { id: 1, ...createUserDto, password: hashedPassword };
+
+    mockUserRepository.findOne.mockResolvedValue(null);
+    (hashPassword as jest.Mock).mockResolvedValue(hashedPassword);
+    mockUserRepository.create.mockReturnValue(newUser);
+    mockUserRepository.save.mockResolvedValue(newUser);
+
+    const result = await service.create(createUserDto);
+
+    expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { username: 'testuser' } });
+    expect(hashPassword).toHaveBeenCalledWith('Test@1234');
+    expect(mockUserRepository.create).toHaveBeenCalledWith({ ...createUserDto, password: hashedPassword });
+    expect(mockUserRepository.save).toHaveBeenCalledWith(newUser);
+    expect(result).toEqual(newUser);
   });
 
-  const seedDatabase = async () => {
-    repository.clear();
-    usersList = [];
-    for (let i = 0; i < 5; i++) {
-      const user: UserEntity = await repository.save({
-        username: faker.internet.username(),
-        name: faker.person.fullName(),
-        password: faker.internet.password({ prefix: 'Password123!' }),
-      });
-      usersList.push(user);
-    }
-  };
+  it('should throw an error if user already exists', async () => {
+    const createUserDto = { username: 'testuser', password: 'Test@1234', name: 'Test User' };
+    mockUserRepository.findOne.mockResolvedValue({ id: 1, username: 'testuser' });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  it('findAll should return all users', async () => {
-    const users: UserEntity[] = await service.findAll();
-    expect(users).not.toBeNull();
-    expect(users).toHaveLength(usersList.length);
-  });
-
-  it('findOne should return a user by username', async () => {
-    const storedUser: UserEntity = usersList[0];
-    const user: UserEntity = await service.findOne(storedUser.username);
-    expect(user).not.toBeNull();
-    expect(user.name).toEqual(storedUser.name);
-    expect(user.username).toEqual(storedUser.username);
-  });
-
-  it('findOne should throw an exception for an invalid user', async () => {
-    await expect(() => service.findOne('0')).rejects.toHaveProperty(
-      'message',
-      'The user with the given username was not found',
-    );
-  });
-
-  it('create should return a new user', async () => {
-    const user: UserEntity = {
-      id: '',
-      username: faker.internet.username(),
-      name: faker.person.fullName(),
-      password: faker.internet.password({ prefix: 'Password123!' }),
-    };
-
-    (hashPassword as jest.Mock).mockResolvedValue(user.password);
-
-    const newUser: UserEntity = await service.create(user);
-    expect(newUser).not.toBeNull();
-
-    const storedUser: UserEntity = await repository.findOne({
-      where: { username: newUser.username },
-    });
-    expect(storedUser).not.toBeNull();
-    expect(storedUser.name).toEqual(newUser.name);
-    expect(storedUser.username).toEqual(newUser.username);
-  });
-
-  it('update should modify a user', async () => {
-    const user: UserEntity = usersList[0];
-    user.name = 'New name';
-
-    const updatedUser: UserEntity = await service.update(user.username, user);
-    expect(updatedUser).not.toBeNull();
-
-    const storedUser: UserEntity = await repository.findOne({
-      where: { username: user.username },
-    });
-    expect(storedUser).not.toBeNull();
-    expect(storedUser.name).toEqual(user.name);
-    expect(storedUser.username).toEqual(user.username);
-  });
-
-  it('update should throw an exception for an invalid user', async () => {
-    let user: UserEntity = usersList[0];
-    user = {
-      ...user,
-      name: 'New name',
-    };
-    await expect(() => service.update('0', user)).rejects.toHaveProperty(
-      'message',
-      'The user with the given username was not found',
+    await expect(service.create(createUserDto)).rejects.toThrow(
+      new BusinessLogicException('User already exists', BusinessError.ALREADY_EXISTS),
     );
   });
 
-  it('remove should remove a user', async () => {
-    const user: UserEntity = usersList[0];
-    await service.remove(user.username);
+  it('should throw an error if password is too weak', async () => {
+    const createUserDto = { username: 'testuser', password: 'weak', name: 'Test User' };
+    mockUserRepository.findOne.mockResolvedValue(null);
 
-    const deletedUser: UserEntity = await repository.findOne({
-      where: { username: user.username },
-    });
-    expect(deletedUser).toBeNull();
-  });
-
-  it('remove should throw an exception for an invalid user', async () => {
-    await expect(service.remove('0')).rejects.toHaveProperty(
-      'message',
-      'The user with the given username was not found',
+    await expect(service.create(createUserDto)).rejects.toThrow(
+      new BusinessLogicException(
+        'Password too weak. It must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, 1 special character, and be at least 8 characters long.',
+        BusinessError.BAD_REQUEST,
+      ),
     );
   });
+});
 
-  describe('login', () => {
-    it('should return the user when username is valid', async () => {
-      const user = usersList[0];
-      const password = user.password;
+describe('findAll', () => {
+  it('should return all users', async () => {
+    const users = [{ id: 1, username: 'user1' }, { id: 2, username: 'user2' }];
+    mockUserRepository.find.mockResolvedValue(users);
 
-      (comparePassword as jest.Mock).mockResolvedValue(true);
+    const result = await service.findAll();
 
-      const foundUser = await service.login(user.username, password);
-
-      expect(comparePassword).toHaveBeenCalledWith(password, user.password);
-      expect(foundUser.username).toEqual(user.username);
-      expect(foundUser.name).toEqual(user.name);
-    });
-
-    it('should throw UnauthorizedException if user does not exist', async () => {
-      const invalidLogin = 'nonExistentUser';
-      const password = 'password';
-
-      await expect(service.login(invalidLogin, password)).rejects.toThrow(
-        UnauthorizedException,
-      );
-      await expect(
-        service.login(invalidLogin, password),
-      ).rejects.toHaveProperty('message', 'Invalid credentials');
-    });
-
-    it('should throw UnauthorizedException if password is incorrect', async () => {
-      const user = usersList[0];
-      const wrongPassword = 'wrongPassword';
-
-      (comparePassword as jest.Mock).mockResolvedValue(false);
-
-      await expect(service.login(user.username, wrongPassword)).rejects.toThrow(
-        UnauthorizedException,
-      );
-      await expect(
-        service.login(user.username, wrongPassword),
-      ).rejects.toHaveProperty('message', 'Invalid credentials');
-    });
+    expect(mockUserRepository.find).toHaveBeenCalled();
+    expect(result).toEqual(users);
   });
+});
+
+describe('findOne', () => {
+  it('should return a user by username', async () => {
+    const user = { id: 1, username: 'testuser' };
+    mockUserRepository.findOne.mockResolvedValue(user);
+
+    const result = await service.findOne('testuser');
+
+    expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { username: 'testuser' } });
+    expect(result).toEqual(user);
+  });
+
+  it('should throw an error if user is not found', async () => {
+    mockUserRepository.findOne.mockResolvedValue(null);
+
+    await expect(service.findOne('testuser')).rejects.toThrow(
+      new BusinessLogicException('The user with the given username was not found', BusinessError.NOT_FOUND),
+    );
+  });
+});
+
+describe('login', () => {
+  it('should authenticate a user with valid credentials', async () => {
+    const user = { id: 1, username: 'testuser', password: 'hashedPassword' };
+    mockUserRepository.findOne.mockResolvedValue(user);
+    (comparePassword as jest.Mock).mockResolvedValue(true);
+
+    const result = await service.login('testuser', 'Test@1234');
+
+    expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { username: 'testuser' } });
+    expect(comparePassword).toHaveBeenCalledWith('Test@1234', 'hashedPassword');
+    expect(result).toEqual(user);
+  });
+
+  it('should throw an error if credentials are invalid', async () => {
+    mockUserRepository.findOne.mockResolvedValue(null);
+
+    await expect(service.login('testuser', 'Test@1234')).rejects.toThrow(
+      new UnauthorizedException('Invalid credentials'),
+    );
+  });
+});
+
+describe('update', () => {
+  it('should update a user', async () => {
+    const persistedUser = { id: '1', username: 'testuser', password: 'hashedPassword', name: 'Test User' };
+    const updateUserDto = { username: 'updateduser', name: 'Updated User', password: 'NewPassword@1234' };
+    const updatedUser = { ...persistedUser, ...updateUserDto };
+
+    mockUserRepository.findOne.mockResolvedValue(persistedUser);
+    mockUserRepository.save.mockResolvedValue(updatedUser);
+
+    const result = await service.update('testuser', updateUserDto);
+
+    expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { username: 'testuser' } });
+    expect(mockUserRepository.save).toHaveBeenCalledWith(updatedUser);
+    expect(result).toEqual(updatedUser);
+  });
+
+  it('should throw an error if user is not found', async () => {
+    mockUserRepository.findOne.mockResolvedValue(null);
+
+    await expect(service.update('testuser', {
+      username: 'updateduser',
+      password: 'NewPassword@1234',
+      name: 'Updated User',
+    })).rejects.toThrow(
+      new BusinessLogicException('The user with the given username was not found', BusinessError.NOT_FOUND),
+    );
+  });
+});
+
+describe('remove', () => {
+  it('should remove a user', async () => {
+    const user = { id: 1, username: 'testuser' };
+    mockUserRepository.findOne.mockResolvedValue(user);
+    mockUserRepository.remove.mockResolvedValue(user);
+
+    const result = await service.remove('testuser');
+
+    expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { username: 'testuser' } });
+    expect(mockUserRepository.remove).toHaveBeenCalledWith(user);
+    expect(result).toEqual(user);
+  });
+
+  it('should throw an error if user is not found', async () => {
+    mockUserRepository.findOne.mockResolvedValue(null);
+
+    await expect(service.remove('testuser')).rejects.toThrow(
+      new BusinessLogicException('The user with the given username was not found', BusinessError.NOT_FOUND),
+    );
+  });
+});
 });

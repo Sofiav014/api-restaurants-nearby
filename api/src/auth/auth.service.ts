@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { RedisService } from 'src/redis/redis.service';
+import { RedisService } from '../redis/redis.service';
 import { UserEntity } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 
@@ -16,6 +16,7 @@ export class AuthService {
    * @param usersService - Service for managing user-related operations.
    * @param jwtService - Service for handling JSON Web Token (JWT) operations.
    * @param configService - Service for accessing application configuration.
+   * @param redisService - Service for handling Redis operations.
    */
   constructor(
     private usersService: UsersService,
@@ -70,7 +71,6 @@ export class AuthService {
    * @returns A promise that resolves when the user's session data has been removed.
    */
   async logout(user_id: string) {
-    console.log('Logging out user with ID:', user_id);
     await this.redisService.del(user_id);
   }
 }

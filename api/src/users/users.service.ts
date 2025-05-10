@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { RedisService } from '../redis/redis.service';
 import {
   BusinessError,
   BusinessLogicException,
@@ -11,7 +12,6 @@ import {
 } from '../shared/security/password-utils';
 import { UserDto } from './dto/user.dto';
 import { UserEntity } from './entities/user.entity';
-import { RedisService } from 'src/redis/redis.service';
 
 /**
  * Service responsible for managing user-related operations.

@@ -19,9 +19,9 @@ import {
 import { AuthService } from '../auth/auth.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
+import { getUserIdFromToken } from '../shared/security/user-utils';
 import { UserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
-import { getUserIdFromToken } from 'src/shared/security/user-utils';
 
 /**
  * Controller for managing user-related operations.
