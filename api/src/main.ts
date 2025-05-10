@@ -14,11 +14,10 @@ async function bootstrap() {
 
   // Swagger documentation
   const config = new DocumentBuilder()
-    .setTitle('Tyba technical test API')
-    .setDescription('API for Tyba technical test')
+    .setTitle('Tyba Backend Engineer test API')
+    .setDescription('Developed by Sofia Velasquez Marin')
     .setVersion('1.0')
     .addBearerAuth()
-    .addTag('Tyba')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

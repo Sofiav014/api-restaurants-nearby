@@ -15,7 +15,11 @@ export class RestaurantResponseDto {
   })
   address?: string;
 
-  @ApiProperty({ example: 4.5, required: false })
+  @ApiProperty({
+    example: 4.5,
+    description: 'Calificación del restaurante',
+    required: false,
+  })
   rating?: number;
 
   @ApiProperty({
