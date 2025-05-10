@@ -117,7 +117,6 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Req() req) {
-
     const token = req.headers.authorization.split(' ')[1];
     const user_id = getUserIdFromToken(token);
     return this.authService.logout(user_id);

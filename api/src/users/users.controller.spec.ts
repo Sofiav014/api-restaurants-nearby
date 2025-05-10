@@ -4,7 +4,6 @@ import { UserDto } from './dto/user.dto';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
-
 jest.mock('../shared/security/user-utils', () => ({
   getUserIdFromToken: jest.fn(),
 }));
@@ -48,7 +47,8 @@ describe('UsersController', () => {
   describe('create', () => {
     it('should create a new user', async () => {
       const userDto: UserDto = {
-        username: 'testuser', password: 'Password123!',
+        username: 'testuser',
+        password: 'Password123!',
         name: 'Test User',
       };
       const createdUser = { id: '1', ...userDto };

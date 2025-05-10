@@ -255,45 +255,45 @@ describe('RestaurantsService', () => {
       );
     });
   });
-describe('getRestaurantsByCoordinates - Latitude and Longitude Validation', () => {
-  it('should throw a BusinessLogicException if latitude is out of range', async () => {
-    await expect(
-      service.getRestaurantsByCoordinates(-91, -122.3965),
-    ).rejects.toThrow(
-      new BusinessLogicException(
-        'Latitude must be between -90 and 90 degrees',
-        BusinessError.BAD_REQUEST,
-      ),
-    );
+  describe('getRestaurantsByCoordinates - Latitude and Longitude Validation', () => {
+    it('should throw a BusinessLogicException if latitude is out of range', async () => {
+      await expect(
+        service.getRestaurantsByCoordinates(-91, -122.3965),
+      ).rejects.toThrow(
+        new BusinessLogicException(
+          'Latitude must be between -90 and 90 degrees',
+          BusinessError.BAD_REQUEST,
+        ),
+      );
 
-    await expect(
-      service.getRestaurantsByCoordinates(91, -122.3965),
-    ).rejects.toThrow(
-      new BusinessLogicException(
-        'Latitude must be between -90 and 90 degrees',
-        BusinessError.BAD_REQUEST,
-      ),
-    );
+      await expect(
+        service.getRestaurantsByCoordinates(91, -122.3965),
+      ).rejects.toThrow(
+        new BusinessLogicException(
+          'Latitude must be between -90 and 90 degrees',
+          BusinessError.BAD_REQUEST,
+        ),
+      );
+    });
+
+    it('should throw a BusinessLogicException if longitude is out of range', async () => {
+      await expect(
+        service.getRestaurantsByCoordinates(37.7937, -181),
+      ).rejects.toThrow(
+        new BusinessLogicException(
+          'Longitude must be between -180 and 180 degrees',
+          BusinessError.BAD_REQUEST,
+        ),
+      );
+
+      await expect(
+        service.getRestaurantsByCoordinates(37.7937, 181),
+      ).rejects.toThrow(
+        new BusinessLogicException(
+          'Longitude must be between -180 and 180 degrees',
+          BusinessError.BAD_REQUEST,
+        ),
+      );
+    });
   });
-
-  it('should throw a BusinessLogicException if longitude is out of range', async () => {
-    await expect(
-      service.getRestaurantsByCoordinates(37.7937, -181),
-    ).rejects.toThrow(
-      new BusinessLogicException(
-        'Longitude must be between -180 and 180 degrees',
-        BusinessError.BAD_REQUEST,
-      ),
-    );
-
-    await expect(
-      service.getRestaurantsByCoordinates(37.7937, 181),
-    ).rejects.toThrow(
-      new BusinessLogicException(
-        'Longitude must be between -180 and 180 degrees',
-        BusinessError.BAD_REQUEST,
-      ),
-    );
-  });
-});
 });

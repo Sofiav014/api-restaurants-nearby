@@ -66,14 +66,25 @@ describe('AuthService', () => {
 
   describe('validateUser', () => {
     it('should return a user if valid credentials are provided', async () => {
-      const result = await authService.validateUser(mockUser.username, mockUser.password);
+      const result = await authService.validateUser(
+        mockUser.username,
+        mockUser.password,
+      );
       expect(result).toEqual(mockUser);
-      expect(usersService.login).toHaveBeenCalledWith(mockUser.username, mockUser.password);
+      expect(usersService.login).toHaveBeenCalledWith(
+        mockUser.username,
+        mockUser.password,
+      );
     });
 
     it('should return null if invalid credentials are provided', async () => {
-      jest.spyOn(usersService, 'login').mockRejectedValueOnce(new Error('Invalid credentials'));
-      const result = await authService.validateUser('wronguser', 'wrongpassword');
+      jest
+        .spyOn(usersService, 'login')
+        .mockRejectedValueOnce(new Error('Invalid credentials'));
+      const result = await authService.validateUser(
+        'wronguser',
+        'wrongpassword',
+      );
       expect(result).toBeNull();
     });
   });

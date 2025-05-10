@@ -38,21 +38,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    */
   async validate(
     req: Request,
-    payload: { iat: number; exp: number; username: string, sub: string },
+    payload: { iat: number; exp: number; username: string; sub: string },
   ) {
-
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
 
-    const isInRedis =
-      await this.redisService.exists(payload.sub);
-
+    const isInRedis = await this.redisService.exists(payload.sub);
 
     if (!isInRedis) {
       throw new UnauthorizedException();
     }
 
     const tokenInRedis = await this.redisService.get(payload.sub);
-
 
     if (tokenInRedis !== token) {
       throw new UnauthorizedException();

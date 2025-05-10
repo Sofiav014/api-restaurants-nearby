@@ -10,12 +10,7 @@ import { UsersService } from './users.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity]), RedisModule],
-  providers: [
-    UsersService,
-    AuthService,
-    JwtService,
-    ConfigService,
-  ],
+  providers: [UsersService, AuthService, JwtService, ConfigService],
   controllers: [UsersController],
 })
 export class UsersModule {}

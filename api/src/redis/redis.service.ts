@@ -14,7 +14,11 @@ export class RedisService {
     });
   }
 
-  async set(key: string, value: string, expirationInSeconds?: number): Promise<void> {
+  async set(
+    key: string,
+    value: string,
+    expirationInSeconds?: number,
+  ): Promise<void> {
     console.log('Setting key:', key, 'with value:', value);
     if (expirationInSeconds) {
       await this.client.set(key, value, 'EX', expirationInSeconds);

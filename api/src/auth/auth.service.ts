@@ -53,14 +53,14 @@ export class AuthService {
   async login(req: any) {
     const payload = { username: req.user.username, sub: req.user.id };
     const token = this.jwtService.sign(payload, {
-        secret: this.configService.get('jwt.secret'),
-        expiresIn: this.configService.get('jwt.expiresIn'),
-      });
-    
+      secret: this.configService.get('jwt.secret'),
+      expiresIn: this.configService.get('jwt.expiresIn'),
+    });
+
     await this.redisService.set(req.user.id, token);
-    
+
     return {
-      token: token
+      token: token,
     };
   }
 

@@ -8,7 +8,10 @@ import { TransactionsService } from './transactions.service';
 import { RedisModule } from '../redis/redis.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TransactionEntity, UserEntity]), RedisModule],
+  imports: [
+    TypeOrmModule.forFeature([TransactionEntity, UserEntity]),
+    RedisModule,
+  ],
   controllers: [TransactionsController],
   providers: [TransactionsService, UsersService],
   exports: [TransactionsService],

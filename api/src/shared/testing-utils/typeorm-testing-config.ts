@@ -10,8 +10,5 @@ export const TypeOrmTestingConfig = () => [
     entities: ['src/**/*.entity{.ts,.js}'],
     synchronize: true,
   }),
-  TypeOrmModule.forFeature([
-    UserEntity,
-    TransactionEntity,
-  ]),
+  TypeOrmModule.forFeature([UserEntity, TransactionEntity]),
 ];
