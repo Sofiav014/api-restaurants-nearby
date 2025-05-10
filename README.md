@@ -101,3 +101,16 @@ Si se quiere ejecutar las pruebas y saber su covertura, se debe ejecutar el sigu
 ```shell
 npm run test:cov
 ```
+
+### Pruebas de Postman
+
+Puedes descargar la colección que se encuentra en `api/collections/Prueba_Backend_Engineer_Tyba.postman_collection.json` y ejecutarla manualmente en tu aplicacion de postman
+
+> [!IMPORTANT]  
+> Si la variable de entorno `baseUrl` no esta inicializada, inicializala con `http://localhost:3000/api/v1`
+
+Tambien las puedes ejecutar con el siguiente comando:
+
+```shell
+npm run test:newman
+```
