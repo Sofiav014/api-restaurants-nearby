@@ -58,7 +58,7 @@ export class UsersController {
   })
   @ApiResponse({ status: 409, description: 'User already exists' })
   @UseInterceptors(ClassSerializerInterceptor)
-  @Post('singup')
+  @Post('signup')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: UserDto): Promise<UserDto> {
     return await this.usersService.create(createUserDto);
