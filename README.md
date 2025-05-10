@@ -35,11 +35,7 @@ Recuerda seguir las mejores prácticas de ingeniería. Prestamos especial atenci
 
 1. [Clona el repositorio](https://github.com/Sofiav014/api-restaurants-nearby.git)
 
-2. Ubícate en la carpeta `api` del proyecto.
-
-   ```shell
-   cd api
-   ```
+2. Ubícate en la carpeta raiz del proyecto
 
 3. Crea un archivo `.env` con las siguientes variables:
 

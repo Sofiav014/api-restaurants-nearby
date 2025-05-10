@@ -1,0 +1,3578 @@
+{
+	"info": {
+		"_postman_id": "31988a83-3881-4249-9b2d-974f0dbefcc1",
+		"name": "Prueba Backend Engineer – Tyba",
+		"description": "Developed by Sofia Velasquez Marin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25797145",
+		"_collection_link": "https://lunar-moon-300792.postman.co/workspace/88b8dad5-c031-4ca1-8d89-464268eec331/collection/25797145-31988a83-3881-4249-9b2d-974f0dbefcc1?action=share&source=collection_link&creator=25797145"
+	},
+	"item": [
+		{
+			"name": "HealthCheck",
+			"item": [
+				{
+					"name": "Healthcheck",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response matches expected message\", function () {\r",
+									"    pm.expect(pm.response.text()).to.eql(\"Hello Tyba! This is the API for the technical test resolved by Sofia Velasquez Marin.\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Healthcheck",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "text/html",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "Hello Tyba! This is the API for the technical test resolved by Sofia Velasquez Marin."
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "(Signup) Create a valid user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function getRandomInt(min, max) {\r",
+									"    return Math.floor(Math.random() * (max - min)) + min;\r",
+									"}\r",
+									"\r",
+									"// Generate random first and last names\r",
+									"const firstNames = ['Alice', 'Bob', 'Carlos', 'Diana', 'Eva', 'Frank', 'Grace', 'Hector'];\r",
+									"const lastNames = ['Smith', 'Johnson', 'Lopez', 'Martinez', 'Brown', 'Davis', 'Garcia', 'Miller'];\r",
+									"\r",
+									"const firstName = firstNames[getRandomInt(0, firstNames.length)];\r",
+									"const lastName = lastNames[getRandomInt(0, lastNames.length)];\r",
+									"const fullName = `${firstName} ${lastName}`;\r",
+									"\r",
+									"// Generate username\r",
+									"const username = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${getRandomInt(100, 999)}`;\r",
+									"\r",
+									"// Generate a secure-ish password\r",
+									"const password = `P@ss${getRandomInt(1000, 9999)}word!`;\r",
+									"\r",
+									"// Set variables\r",
+									"pm.environment.set(\"test_username\", username);\r",
+									"pm.environment.set(\"test_password\", password);\r",
+									"pm.environment.set(\"test_name\", fullName);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201 - Created\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const requestUsername = pm.environment.get(\"test_username\");\r",
+									"const requestPassword = pm.environment.get(\"test_password\");\r",
+									"const requestName = pm.environment.get(\"test_name\");\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Username in response matches the one sent\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"username\");\r",
+									"    pm.expect(jsonData.username).to.eql(requestUsername);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Name in response matches the one sent\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData.name).to.eql(requestName);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Password is NOT included in the response\", function () {\r",
+									"    pm.expect(jsonData).to.not.have.property(\"password\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains a user identifier\", function () {\r",
+									"    pm.expect(jsonData).to.have.any.keys(\"id\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{test_username}}\",\r\n  \"password\": \"{{test_password}}\",\r\n  \"name\": \"{{test_name}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"signup"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create a valid user (Signup)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"user_62198\",\r\n  \"password\": \"Password1234!\",\r\n  \"name\": \"Charlie Garcia\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/v1/users/signup",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"username\": \"user_62198\",\n    \"name\": \"Charlie Garcia\",\n    \"id\": \"0270ee17-b45a-4985-92ff-18d052c853c7\"\n}"
+						}
+					]
+				},
+				{
+					"name": "(Signup) Create a valid user  2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function getRandomInt(min, max) {\r",
+									"    return Math.floor(Math.random() * (max - min)) + min;\r",
+									"}\r",
+									"\r",
+									"// Generate random first and last names\r",
+									"const firstNames = ['Alice', 'Bob', 'Carlos', 'Diana', 'Eva', 'Frank', 'Grace', 'Hector'];\r",
+									"const lastNames = ['Smith', 'Johnson', 'Lopez', 'Martinez', 'Brown', 'Davis', 'Garcia', 'Miller'];\r",
+									"\r",
+									"const firstName = firstNames[getRandomInt(0, firstNames.length)];\r",
+									"const lastName = lastNames[getRandomInt(0, lastNames.length)];\r",
+									"const fullName = `${firstName} ${lastName}`;\r",
+									"\r",
+									"// Generate username\r",
+									"const username = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${getRandomInt(100, 999)}`;\r",
+									"\r",
+									"// Generate a secure-ish password\r",
+									"const password = `P@ss${getRandomInt(1000, 9999)}word!`;\r",
+									"\r",
+									"// Set variables\r",
+									"pm.environment.set(\"test_username2\", username);\r",
+									"pm.environment.set(\"test_password2\", password);\r",
+									"pm.environment.set(\"test_name2\", fullName);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201 - Created\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const requestUsername = pm.environment.get(\"test_username2\");\r",
+									"const requestPassword = pm.environment.get(\"test_password2\");\r",
+									"const requestName = pm.environment.get(\"test_name2\");\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Username in response matches the one sent\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"username\");\r",
+									"    pm.expect(jsonData.username).to.eql(requestUsername);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Name in response matches the one sent\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData.name).to.eql(requestName);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Password is NOT included in the response\", function () {\r",
+									"    pm.expect(jsonData).to.not.have.property(\"password\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains a user identifier\", function () {\r",
+									"    pm.expect(jsonData).to.have.any.keys(\"id\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{test_username2}}\",\r\n  \"password\": \"{{test_password2}}\",\r\n  \"name\": \"{{test_name2}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"signup"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create a valid user (Signup)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"user_62198\",\r\n  \"password\": \"Password1234!\",\r\n  \"name\": \"Charlie Garcia\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/v1/users/signup",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"username\": \"user_62198\",\n    \"name\": \"Charlie Garcia\",\n    \"id\": \"0270ee17-b45a-4985-92ff-18d052c853c7\"\n}"
+						}
+					]
+				},
+				{
+					"name": "(Signup) Create an existing user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 409\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(409);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response has the required field 'message'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message equals 'User already exists'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.eql(\"User already exists\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response Content-Type is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{test_username}}\",\r\n  \"password\": \"Password1234!\",\r\n  \"name\": \"Sofia Velasquez\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"signup"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create an existing user (Signup)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"user_62198\",\r\n  \"password\": \"Password1234!\",\r\n  \"name\": \"Sofia Velasquez Marin\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/v1/users/signup",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": "{\r\n    \"message\": \"User already exists\"\r\n}"
+						}
+					]
+				},
+				{
+					"name": "(Signup) Create an user with a weak password",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function getRandomInt(min, max) {\r",
+									"    return Math.floor(Math.random() * (max - min)) + min;\r",
+									"}\r",
+									"\r",
+									"// Generate random first and last names\r",
+									"const firstNames = ['Alice', 'Bob', 'Carlos', 'Diana', 'Eva', 'Frank', 'Grace', 'Hector'];\r",
+									"const lastNames = ['Smith', 'Johnson', 'Lopez', 'Martinez', 'Brown', 'Davis', 'Garcia', 'Miller'];\r",
+									"\r",
+									"const firstName = firstNames[getRandomInt(0, firstNames.length)];\r",
+									"const lastName = lastNames[getRandomInt(0, lastNames.length)];\r",
+									"const fullName = `${firstName} ${lastName}`;\r",
+									"\r",
+									"// Generate username\r",
+									"const username = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${getRandomInt(100, 999)}`;\r",
+									"\r",
+									"// Set variables\r",
+									"pm.environment.set(\"test_username3\", username);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 400\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(400);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response has the required field 'message'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.message).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message field should exist and be a non-empty string\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData).to.be.an('object');\r",
+									"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message equals 'Password too weak. It must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, 1 special character, and be at least 8 characters long.'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.eql(\"Password too weak. It must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, 1 special character, and be at least 8 characters long.\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{test_username3}}\",\r\n  \"password\": \"weak\",\r\n  \"name\": \"Sofia Velasquez\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"signup"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Signup) Create an user with a weak password",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"username\",\r\n  \"password\": \"weak\",\r\n  \"name\": \"name\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/v1/users/signup",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Password too weak. It must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, 1 special character, and be at least 8 characters long.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "(Login) Login as a valid user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response Content-Type is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response has the required fields\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.token).to.exist;\r",
+									"\r",
+									"    pm.globals.set(\"token_user_1\", responseData.token);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Token is a non-empty string\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData.token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Token should not be empty\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{test_username}}\",\r\n  \"password\": \"{{test_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Login) Login as a valid user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"username\",\r\n  \"password\": \"Password1234!\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/v1/users/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "241"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"f1-nZkxhakf2bxVpeCDCMpCK9ZpdVw\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:09:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Int7dGVzdF91c2VybmFtZX19Iiwic3ViIjoiZjJhZGM1ZjEtNTdlNi00YmI0LWI3MTUtYTcxNmMwZDM5MzBjIiwiaWF0IjoxNzQ2ODg2MTkzLCJleHAiOjE3NDY4ODcwOTN9.4s3M54tBi9F69ungMzEWrsjJA0m-13gmRqqPaJ0q_IY\"\n}"
+						}
+					]
+				},
+				{
+					"name": "(Login) Login as a valid user 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response Content-Type is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response has the required fields\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.token).to.exist;\r",
+									"\r",
+									"    pm.globals.set(\"token_user_2\", responseData.token);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Token is a non-empty string\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData.token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Token should not be empty\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"{{test_username2}}\",\r\n  \"password\": \"{{test_password2}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Login) Login as a valid user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"username\",\r\n  \"password\": \"Password1234!\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/v1/users/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "241"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"f1-nZkxhakf2bxVpeCDCMpCK9ZpdVw\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:09:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Int7dGVzdF91c2VybmFtZX19Iiwic3ViIjoiZjJhZGM1ZjEtNTdlNi00YmI0LWI3MTUtYTcxNmMwZDM5MzBjIiwiaWF0IjoxNzQ2ODg2MTkzLCJleHAiOjE3NDY4ODcwOTN9.4s3M54tBi9F69ungMzEWrsjJA0m-13gmRqqPaJ0q_IY\"\n}"
+						}
+					]
+				},
+				{
+					"name": "(Logout) Logout as a valid user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 204\", function () {",
+									"    pm.expect(pm.response.code).to.equal(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Logout as a valid user",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/users/logout",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"logout"
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:19:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Restaurants",
+			"item": [
+				{
+					"name": "(Authenticated) Get nearby restaurants from city",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Each restaurant has required and valid optional fields\", function () {\r",
+									"    const data = pm.response.json();\r",
+									"\r",
+									"    pm.expect(data).to.be.an(\"array\");\r",
+									"\r",
+									"    data.forEach((restaurant, index) => {\r",
+									"        pm.expect(restaurant).to.have.property(\"name\");\r",
+									"        pm.expect(restaurant.name).to.be.a(\"string\", `Invalid name at index ${index}`);\r",
+									"\r",
+									"        if (restaurant.hasOwnProperty(\"address\")) {\r",
+									"            pm.expect(restaurant.address).to.be.a(\"string\", `Invalid address at index ${index}`);\r",
+									"        }\r",
+									"\r",
+									"        if (restaurant.hasOwnProperty(\"rating\")) {\r",
+									"            pm.expect(restaurant.rating).to.be.a(\"number\", `Invalid rating at index ${index}`);\r",
+									"        }\r",
+									"\r",
+									"        if (restaurant.hasOwnProperty(\"more_info\")) {\r",
+									"            pm.expect(restaurant.more_info).to.be.a(\"string\", `Invalid more_info at index ${index}`);\r",
+									"        }\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?city=bogotá",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "bogotá"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Authenticated) Get nearby restaurants from city",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?city=bogotá",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "city",
+											"value": "bogotá"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1741"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"6cd-FBmUZXtD90LzTcTQ+0YSPWK2Muk\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:23:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"name\": \"El Corral Bulevar Niza\",\n        \"address\": \"Avenida Suba con Calle 127-59 Local 318 Bulevar, Bogotá, Colombia\",\n        \"rating\": 4.1,\n        \"more_info\": \"https://maps.google.com/?cid=5093687532761844706\"\n    },\n    {\n        \"name\": \"Jaime Gourmet\",\n        \"address\": \"Suba, Bogotá, Bogota, Colombia\",\n        \"rating\": 4.6,\n        \"more_info\": \"https://maps.google.com/?cid=7419005442531957692\"\n    },\n    {\n        \"name\": \"McDonald's\",\n        \"address\": \"Cra. 58 #127-59 Locales 2128/2129, Suba, Bogotá, Cundinamarca, Colombia\",\n        \"rating\": 4,\n        \"more_info\": \"https://maps.google.com/?cid=160910790127894313\"\n    },\n    {\n        \"name\": \"COLOMBIAN GRILL RESTAURANTE COCKTAILS\",\n        \"address\": \"Calle127d# 60-14, Cl. 127D #60-14, Bogotá, Colombia\",\n        \"rating\": 4.4,\n        \"more_info\": \"https://maps.google.com/?cid=14938608673275902822\"\n    },\n    {\n        \"name\": \"Frisby CC Bahia\",\n        \"address\": \"Av Suba ## 122 - 86, Suba, Bogotá, Cundinamarca, Colombia\",\n        \"rating\": 4.2,\n        \"more_info\": \"https://maps.google.com/?cid=15163022067535973556\"\n    },\n    {\n        \"name\": \"Llanerada\",\n        \"address\": \"Cra. 58 #128-53, Bogotá, Colombia\",\n        \"rating\": 4.3,\n        \"more_info\": \"https://maps.google.com/?cid=15957294212537054714\"\n    },\n    {\n        \"name\": \"Papa Johns Pizza\",\n        \"address\": \"Ac 127 #60-19, Suba, Bogotá, Cundinamarca, Colombia\",\n        \"rating\": 4.4,\n        \"more_info\": \"https://maps.google.com/?cid=15388992049775018783\"\n    },\n    {\n        \"name\": \"Crepes & Waffles Centro Comercial Bulevar Niza\",\n        \"address\": \"Cra. 58 #127 - 59, Bogotá, Colombia\",\n        \"rating\": 4.1,\n        \"more_info\": \"https://maps.google.com/?cid=4453674197361817523\"\n    },\n    {\n        \"name\": \"Tejano Bar-B-Cue 100% Ahumado\",\n        \"address\": \"Carrera 58#128-71, Suba, Bogotá, Colombia\",\n        \"rating\": 4.6,\n        \"more_info\": \"https://maps.google.com/?cid=2249699577049864567\"\n    },\n    {\n        \"name\": \"McDonald's\",\n        \"address\": \"Avda Esp # 62-49 L 3-36 CC Gran Estacion, Suba, Bogotá, Cundinamarca, Colombia\",\n        \"rating\": 3.3,\n        \"more_info\": \"https://maps.google.com/?cid=8767828599222437120\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "(Unauthenticated) Get nearby restaurants from city",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 401\", function () {\r",
+									"    pm.expect(pm.response.to.have.status(401));\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response has the required fields - message and statusCode\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData).to.be.an('object');\r",
+									"  pm.expect(responseData.message).to.exist;\r",
+									"  pm.expect(responseData.statusCode).to.exist;\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Message is a non-empty string\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?city=bogotá",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "bogotá"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Unauthenticated) Get nearby restaurants from city",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?city=bogotá",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "city",
+											"value": "bogotá"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "43"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2b-dGnJzt6gv1nJjX6DJ9RztDWptng\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:25:32 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthorized\",\n    \"statusCode\": 401\n}"
+						}
+					]
+				},
+				{
+					"name": "(Logout) Get nearby restaurants from city",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 401\", function () {\r",
+									"    pm.expect(pm.response.to.have.status(401));\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response has the required fields - message and statusCode\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData).to.be.an('object');\r",
+									"  pm.expect(responseData.message).to.exist;\r",
+									"  pm.expect(responseData.statusCode).to.exist;\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Message is a non-empty string\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?city=bogotá",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "bogotá"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Logout) Get nearby restaurants from city",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?city=bogotá",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "city",
+											"value": "bogotá"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "43"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2b-dGnJzt6gv1nJjX6DJ9RztDWptng\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:26:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthorized\",\n    \"statusCode\": 401\n}"
+						}
+					]
+				},
+				{
+					"name": "(Authenticated) Get nearby restaurants from coordinates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Each restaurant has required and valid optional fields\", function () {\r",
+									"    const data = pm.response.json();\r",
+									"\r",
+									"    pm.expect(data).to.be.an(\"array\");\r",
+									"\r",
+									"    data.forEach((restaurant, index) => {\r",
+									"        pm.expect(restaurant).to.have.property(\"name\");\r",
+									"        pm.expect(restaurant.name).to.be.a(\"string\", `Invalid name at index ${index}`);\r",
+									"\r",
+									"        if (restaurant.hasOwnProperty(\"address\")) {\r",
+									"            pm.expect(restaurant.address).to.be.a(\"string\", `Invalid address at index ${index}`);\r",
+									"        }\r",
+									"\r",
+									"        if (restaurant.hasOwnProperty(\"rating\")) {\r",
+									"            pm.expect(restaurant.rating).to.be.a(\"number\", `Invalid rating at index ${index}`);\r",
+									"        }\r",
+									"\r",
+									"        if (restaurant.hasOwnProperty(\"more_info\")) {\r",
+									"            pm.expect(restaurant.more_info).to.be.a(\"string\", `Invalid more_info at index ${index}`);\r",
+									"        }\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?lng=-74.06550255610333&lat=4.6043283503023185",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "lng",
+									"value": "-74.06550255610333"
+								},
+								{
+									"key": "lat",
+									"value": "4.6043283503023185"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Authenticated) Get nearby restaurants from coordinates",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?lng=-74.06550255610333&lat=4.6043283503023185",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "lng",
+											"value": "-74.06550255610333"
+										},
+										{
+											"key": "lat",
+											"value": "4.6043283503023185"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1603"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"643-DaoCaYYKaTR9ieWuwxXowr4DxdE\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:29:19 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"name\": \"Casa Magola\",\n        \"address\": \"Cra. 3 #17-60, Bogotá, Colombia\",\n        \"rating\": 4.6,\n        \"more_info\": \"https://maps.google.com/?cid=7452135374192784862\"\n    },\n    {\n        \"name\": \"El Mexican Centro\",\n        \"address\": \"Cra. 5 #20-89, Bogotá, Colombia\",\n        \"rating\": 4.5,\n        \"more_info\": \"https://maps.google.com/?cid=10608625917663426203\"\n    },\n    {\n        \"name\": \"Punto Burger - Calle 19\",\n        \"address\": \"Av. Ciudad de Lima #4 - 38, Bogotá, Colombia\",\n        \"rating\": 4.4,\n        \"more_info\": \"https://maps.google.com/?cid=17300395792955261583\"\n    },\n    {\n        \"name\": \"El Goce Pagano\",\n        \"address\": \"Dg. 20A #0-82, Bogotá, Colombia\",\n        \"rating\": 4.5,\n        \"more_info\": \"https://maps.google.com/?cid=8567442795370254316\"\n    },\n    {\n        \"name\": \"El Corral City U\",\n        \"address\": \"Cl. 19 #2A - 10 Local 308, Bogotá, Colombia\",\n        \"rating\": 3.9,\n        \"more_info\": \"https://maps.google.com/?cid=11475822996201355232\"\n    },\n    {\n        \"name\": \"Monserrat Spa Bogotá\",\n        \"address\": \"Cra. 3 #20-35, Bogotá, Colombia\",\n        \"rating\": 4.4,\n        \"more_info\": \"https://maps.google.com/?cid=197331151669084189\"\n    },\n    {\n        \"name\": \"BOXPLAZA\",\n        \"address\": \"Cra. 1 #20A -79, Bogotá, Colombia\",\n        \"rating\": 4.6,\n        \"more_info\": \"https://maps.google.com/?cid=14610543285199100065\"\n    },\n    {\n        \"name\": \"WiKi Alitas · Burgers · Picadas\",\n        \"address\": \"Cl. 19 #4-34, Bogotá, Colombia\",\n        \"rating\": 4.8,\n        \"more_info\": \"https://maps.google.com/?cid=17941926545205485493\"\n    },\n    {\n        \"name\": \"Restaurante El Rincón del Pacifico\",\n        \"address\": \"Cra. 4 # 19-82, Bogotá, Colombia\",\n        \"rating\": 4.5,\n        \"more_info\": \"https://maps.google.com/?cid=4261563649841664707\"\n    },\n    {\n        \"name\": \"Wok City U\",\n        \"address\": \"Ac. 19 # 2A -1 0 Local 205 - 206 Bogotá, Santa Fé, Bogotá, Cundinamarca, Colombia\",\n        \"rating\": 4.3,\n        \"more_info\": \"https://maps.google.com/?cid=11997889788070423510\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "(Unauthenticated) Get nearby restaurants from coordinates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 401\", function () {\r",
+									"    pm.expect(pm.response.to.have.status(401));\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response has the required fields - message and statusCode\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData).to.be.an('object');\r",
+									"  pm.expect(responseData.message).to.exist;\r",
+									"  pm.expect(responseData.statusCode).to.exist;\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Message is a non-empty string\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?lng=-74.06550255610333&lat=4.6043283503023185",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "lng",
+									"value": "-74.06550255610333"
+								},
+								{
+									"key": "lat",
+									"value": "4.6043283503023185"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Unauthenticated) Get nearby restaurants from coordinates",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?lng=-74.06550255610333&lat=4.6043283503023185",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "lng",
+											"value": "-74.06550255610333"
+										},
+										{
+											"key": "lat",
+											"value": "4.6043283503023185"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "43"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2b-dGnJzt6gv1nJjX6DJ9RztDWptng\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:30:23 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthorized\",\n    \"statusCode\": 401\n}"
+						}
+					]
+				},
+				{
+					"name": "(Logout) Get nearby restaurants from coordinates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 401\", function () {\r",
+									"    pm.expect(pm.response.to.have.status(401));\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response has the required fields - message and statusCode\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData).to.be.an('object');\r",
+									"  pm.expect(responseData.message).to.exist;\r",
+									"  pm.expect(responseData.statusCode).to.exist;\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Message is a non-empty string\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?lng=-74.06550255610333&lat=4.6043283503023185",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "lng",
+									"value": "-74.06550255610333"
+								},
+								{
+									"key": "lat",
+									"value": "4.6043283503023185"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Logout) Get nearby restaurants from coordinates",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?lng=-74.06550255610333&lat=4.6043283503023185",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "lng",
+											"value": "-74.06550255610333"
+										},
+										{
+											"key": "lat",
+											"value": "4.6043283503023185"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "43"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2b-dGnJzt6gv1nJjX6DJ9RztDWptng\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:30:56 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthorized\",\n    \"statusCode\": 401\n}"
+						}
+					]
+				},
+				{
+					"name": "(City not found) Get nearby restaurants from city",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 404 Not Found\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has the required field 'message'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message equals 'City not found'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.eql(\"City not found\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response Content-Type is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?city=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(City not found) Get nearby restaurants from city",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?city=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "city",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1c-ig4nHJnly9lQHo6ko99mxL8dTJc\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:33:12 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"City not found\"\n}"
+						}
+					]
+				},
+				{
+					"name": "(No pararms) Get nearby restaurants",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has the required field 'message'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message equals 'Missing required query parameters: City or coordinates (Latitude and Longitude)'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.eql(\"Missing required query parameters: City or coordinates (Latitude and Longitude)\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response Content-Type is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(No pararms) Get nearby restaurants",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "93"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"5d-P4Q8xxpJmS7aH3NQm+QHIqn5szg\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:34:22 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Missing required query parameters: City or coordinates (Latitude and Longitude)\"\n}"
+						}
+					]
+				},
+				{
+					"name": "(No Lat) Get nearby restaurants from coordinates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has the required field 'message'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message equals 'Missing required query parameters: City or coordinates (Latitude and Longitude)'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.eql(\"Missing required query parameters: City or coordinates (Latitude and Longitude)\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response Content-Type is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?lng=-74.06550255610333",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "lng",
+									"value": "-74.06550255610333"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(No Lat) Get nearby restaurants from coordinates",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?lng=-74.06550255610333",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "lng",
+											"value": "-74.06550255610333"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "93"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"5d-P4Q8xxpJmS7aH3NQm+QHIqn5szg\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:37:10 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Missing required query parameters: City or coordinates (Latitude and Longitude)\"\n}"
+						}
+					]
+				},
+				{
+					"name": "(No Lng) Get nearby restaurants from coordinates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has the required field 'message'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message equals 'Missing required query parameters: City or coordinates (Latitude and Longitude)'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.eql(\"Missing required query parameters: City or coordinates (Latitude and Longitude)\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response Content-Type is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?lat=4.6043283503023185",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "4.6043283503023185"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(No Lng) Get nearby restaurants from coordinates",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?lat=4.6043283503023185",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "lat",
+											"value": "4.6043283503023185"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "93"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"5d-P4Q8xxpJmS7aH3NQm+QHIqn5szg\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:37:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Missing required query parameters: City or coordinates (Latitude and Longitude)\"\n}"
+						}
+					]
+				},
+				{
+					"name": "(Invalid Lat) Get nearby restaurants from coordinates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has the required field 'message'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message equals 'Latitude must be between -90 and 90 degrees'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.eql(\"Latitude must be between -90 and 90 degrees\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response Content-Type is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?lat=-91&lng=-74.06550255610333",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "-91"
+								},
+								{
+									"key": "lng",
+									"value": "-74.06550255610333"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Invalid Lat) Get nearby restaurants from coordinates",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?lat=-91&lng=-74.06550255610333",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "lat",
+											"value": "-91"
+										},
+										{
+											"key": "lng",
+											"value": "-74.06550255610333"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"39-OR/rvJfFFNEt9gSOIlUHKaOHYsQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:40:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Latitude must be between -90 and 90 degrees\"\n}"
+						}
+					]
+				},
+				{
+					"name": "(Invalid Lng) Get nearby restaurants from coordinates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has the required field 'message'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message equals 'Longitude must be between -180 and 180 degrees'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.eql(\"Longitude must be between -180 and 180 degrees\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response Content-Type is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?lat=4.6043283503023185&lng=181",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "4.6043283503023185"
+								},
+								{
+									"key": "lng",
+									"value": "181"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Invalid Lng) Get nearby restaurants from coordinates",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?lat=4.6043283503023185&lng=181",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "lat",
+											"value": "4.6043283503023185"
+										},
+										{
+											"key": "lng",
+											"value": "181"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "60"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3c-yoJvkxhb0lJO3a4uVeNAGBxZYV8\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:41:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Longitude must be between -180 and 180 degrees\"\n}"
+						}
+					]
+				},
+				{
+					"name": "(No restaurants found) Get nearby restaurants",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has the required field 'message'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.exist;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message equals 'No restaurants found in the specified area'\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    pm.expect(responseData.message).to.eql(\"No restaurants found in the specified area\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response Content-Type is application/json\", function () {\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/restaurants?lat=-11.150591672495493&lng=-127.10393290176975",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"restaurants"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "-11.150591672495493"
+								},
+								{
+									"key": "lng",
+									"value": "-127.10393290176975"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(No restaurants found) Get nearby restaurants",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/restaurants?lat=-11.150591672495493&lng=-127.10393290176975",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"restaurants"
+									],
+									"query": [
+										{
+											"key": "lat",
+											"value": "-11.150591672495493"
+										},
+										{
+											"key": "lng",
+											"value": "-127.10393290176975"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "56"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"38-3mOkXl3ZuWxzgh2Mgz5wP3aURo8\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:43:08 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"No restaurants found in the specified area\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Transaction History",
+			"item": [
+				{
+					"name": "(Authenticated) Get all transactions in a date range",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.be.an('array');",
+									"    ",
+									"    responseData.data.forEach(function(transaction) {",
+									"        pm.expect(transaction).to.have.property('id');",
+									"        pm.expect(transaction).to.have.property('user_id');",
+									"        pm.expect(transaction).to.have.property('endpoint');",
+									"        pm.expect(transaction).to.have.property('method');",
+									"        pm.expect(transaction).to.have.property('status_code');",
+									"        pm.expect(transaction).to.have.property('created_at');",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transactions/all?startDate=2025-05-01&endDate=2026-05-01",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions",
+								"all"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-05-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-05-01"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Authenticated) Get all transactions in a date range",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"transactions",
+										"all"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2025-05-01"
+										},
+										{
+											"key": "endDate",
+											"value": "2026-05-01"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "2477"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"9ad-141syxKTSjnG9zY4sX/DLfrUARQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:52:56 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": \"43238e1c-4301-4c55-a4cf-cba074736737\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01&limit=200\",\n            \"method\": \"GET\",\n            \"status_code\": 200,\n            \"created_at\": \"2025-05-10T14:52:26.107Z\"\n        },\n        {\n            \"id\": \"f00f5f52-0b33-4e58-8355-b2df0a022ddf\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01&limit=200\",\n            \"method\": \"GET\",\n            \"status_code\": 200,\n            \"created_at\": \"2025-05-10T14:50:45.662Z\"\n        },\n        {\n            \"id\": \"1951368c-c923-4ccf-87ef-a82a1474ea02\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01\",\n            \"method\": \"GET\",\n            \"status_code\": 200,\n            \"created_at\": \"2025-05-10T14:48:11.944Z\"\n        },\n        {\n            \"id\": \"f9c9c81e-93a9-4895-bce0-c4a23d464830\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01\",\n            \"method\": \"GET\",\n            \"status_code\": 200,\n            \"created_at\": \"2025-05-10T14:47:18.015Z\"\n        },\n        {\n            \"id\": \"36d22391-af8f-44c8-96dc-7e4947e8f1c8\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01\",\n            \"method\": \"GET\",\n            \"status_code\": 200,\n            \"created_at\": \"2025-05-10T14:46:53.117Z\"\n        },\n        {\n            \"id\": \"5126f683-0a5b-4c56-8d1b-8b73901770cb\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions\",\n            \"method\": \"GET\",\n            \"status_code\": 404,\n            \"created_at\": \"2025-05-10T14:46:35.447Z\"\n        },\n        {\n            \"id\": \"3ad956ef-3b21-4594-9885-cdd009915ebd\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions?startDate=2025-05-01&endDate=2026-05-01\",\n            \"method\": \"GET\",\n            \"status_code\": 404,\n            \"created_at\": \"2025-05-10T14:46:04.704Z\"\n        },\n        {\n            \"id\": \"eaaa463b-2496-4566-9753-aeea64f4176a\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/restaurants?lat=-11.150591672495493&lng=-127.10393290176975\",\n            \"method\": \"GET\",\n            \"status_code\": 404,\n            \"created_at\": \"2025-05-10T14:43:44.196Z\"\n        },\n        {\n            \"id\": \"e7b06590-2c38-4d93-8091-1b401b9cbde6\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/restaurants?lat=4.6043283503023185&lng=181\",\n            \"method\": \"GET\",\n            \"status_code\": 400,\n            \"created_at\": \"2025-05-10T14:43:43.998Z\"\n        },\n        {\n            \"id\": \"f660a034-d805-4c32-83fd-e509b0ca6b8d\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/restaurants?lat=-91&lng=-74.06550255610333\",\n            \"method\": \"GET\",\n            \"status_code\": 400,\n            \"created_at\": \"2025-05-10T14:43:43.948Z\"\n        }\n    ],\n    \"totalItems\": 191,\n    \"currentPage\": 1,\n    \"limit\": 10,\n    \"totalPages\": 20\n}"
+						}
+					]
+				},
+				{
+					"name": "(Unauthenticated) Get all transactions in a date range",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 401\", function () {",
+									"    pm.expect(pm.response.to.have.status(401));",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - message and statusCode\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.message).to.exist;",
+									"  pm.expect(responseData.statusCode).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Message is a non-empty string\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transactions/all?startDate=2025-05-01&endDate=2026-05-01",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions",
+								"all"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-05-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-05-01"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Unauthenticated) Get all transactions in a date range",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"transactions",
+										"all"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2025-05-01"
+										},
+										{
+											"key": "endDate",
+											"value": "2026-05-01"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "43"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2b-dGnJzt6gv1nJjX6DJ9RztDWptng\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:55:08 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthorized\",\n    \"statusCode\": 401\n}"
+						}
+					]
+				},
+				{
+					"name": "(Logout) Get all transactions in a date range",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 401\", function () {",
+									"    pm.expect(pm.response.to.have.status(401));",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - message and statusCode\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.message).to.exist;",
+									"  pm.expect(responseData.statusCode).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Message is a non-empty string\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transactions/all?startDate=2025-05-01&endDate=2026-05-01",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions",
+								"all"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-05-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-05-01"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Logout) Get all transactions in a date range",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"transactions",
+										"all"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2025-05-01"
+										},
+										{
+											"key": "endDate",
+											"value": "2026-05-01"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "43"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2b-dGnJzt6gv1nJjX6DJ9RztDWptng\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:57:05 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthorized\",\n    \"statusCode\": 401\n}"
+						}
+					]
+				},
+				{
+					"name": "(Authenticated) Get my transactions in a date range",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response structure is valid\", function () {",
+									"    const response = pm.response.json();",
+									"",
+									"    pm.expect(response).to.be.an(\"object\");",
+									"",
+									"    pm.expect(response).to.have.property(\"data\").that.is.an(\"array\");",
+									"    pm.expect(response).to.have.property(\"totalItems\").that.is.a(\"number\");",
+									"    pm.expect(response).to.have.property(\"currentPage\").that.is.a(\"number\");",
+									"    pm.expect(response).to.have.property(\"limit\").that.is.a(\"number\");",
+									"    pm.expect(response).to.have.property(\"totalPages\").that.is.a(\"number\");",
+									"});",
+									"",
+									"pm.test(\"Each transaction entry is well-formed\", function () {",
+									"    const data = pm.response.json().data;",
+									"",
+									"    data.forEach((tx, index) => {",
+									"        pm.expect(tx).to.have.property(\"id\").that.is.a(\"string\");",
+									"        pm.expect(tx).to.have.property(\"user_id\").that.is.a(\"string\");",
+									"        pm.expect(tx).to.have.property(\"endpoint\").that.is.a(\"string\");",
+									"        pm.expect(tx).to.have.property(\"method\").that.is.a(\"string\");",
+									"        pm.expect(tx).to.have.property(\"status_code\").that.is.a(\"number\");",
+									"        pm.expect(tx).to.have.property(\"created_at\").that.is.a(\"string\");",
+									"",
+									"        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;",
+									"        pm.expect(tx.id).to.match(uuidRegex, `Invalid UUID at index ${index}`);",
+									"        pm.expect(tx.user_id).to.match(uuidRegex, `Invalid user UUID at index ${index}`);",
+									"",
+									"        pm.expect(tx.created_at).to.match(",
+									"            /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/,",
+									"            `Invalid date format at index ${index}`",
+									"        );",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transactions/me?startDate=2025-05-01&endDate=2026-05-01",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions",
+								"me"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-05-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-05-01"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Authenticated) Get my transactions in a date range",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/transactions/me?startDate=2025-05-01&endDate=2026-05-01",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"transactions",
+										"me"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2025-05-01"
+										},
+										{
+											"key": "endDate",
+											"value": "2026-05-01"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "2489"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"9b9-kObdrwJX62r3g5EIPg62ICM6RBE\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:53:45 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": \"a1fa2891-1a2e-46c7-b827-b61133f1d468\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01\",\n            \"method\": \"GET\",\n            \"status_code\": 200,\n            \"created_at\": \"2025-05-10T14:52:56.120Z\"\n        },\n        {\n            \"id\": \"43238e1c-4301-4c55-a4cf-cba074736737\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01&limit=200\",\n            \"method\": \"GET\",\n            \"status_code\": 200,\n            \"created_at\": \"2025-05-10T14:52:26.107Z\"\n        },\n        {\n            \"id\": \"f00f5f52-0b33-4e58-8355-b2df0a022ddf\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01&limit=200\",\n            \"method\": \"GET\",\n            \"status_code\": 200,\n            \"created_at\": \"2025-05-10T14:50:45.662Z\"\n        },\n        {\n            \"id\": \"1951368c-c923-4ccf-87ef-a82a1474ea02\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01\",\n            \"method\": \"GET\",\n            \"status_code\": 200,\n            \"created_at\": \"2025-05-10T14:48:11.944Z\"\n        },\n        {\n            \"id\": \"f9c9c81e-93a9-4895-bce0-c4a23d464830\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01\",\n            \"method\": \"GET\",\n            \"status_code\": 200,\n            \"created_at\": \"2025-05-10T14:47:18.015Z\"\n        },\n        {\n            \"id\": \"36d22391-af8f-44c8-96dc-7e4947e8f1c8\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions/all?startDate=2025-05-01&endDate=2026-05-01\",\n            \"method\": \"GET\",\n            \"status_code\": 200,\n            \"created_at\": \"2025-05-10T14:46:53.117Z\"\n        },\n        {\n            \"id\": \"5126f683-0a5b-4c56-8d1b-8b73901770cb\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions\",\n            \"method\": \"GET\",\n            \"status_code\": 404,\n            \"created_at\": \"2025-05-10T14:46:35.447Z\"\n        },\n        {\n            \"id\": \"3ad956ef-3b21-4594-9885-cdd009915ebd\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/transactions?startDate=2025-05-01&endDate=2026-05-01\",\n            \"method\": \"GET\",\n            \"status_code\": 404,\n            \"created_at\": \"2025-05-10T14:46:04.704Z\"\n        },\n        {\n            \"id\": \"eaaa463b-2496-4566-9753-aeea64f4176a\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/restaurants?lat=-11.150591672495493&lng=-127.10393290176975\",\n            \"method\": \"GET\",\n            \"status_code\": 404,\n            \"created_at\": \"2025-05-10T14:43:44.196Z\"\n        },\n        {\n            \"id\": \"e7b06590-2c38-4d93-8091-1b401b9cbde6\",\n            \"user_id\": \"a2580ace-4536-4288-ae7e-0cc64c8bcf8d\",\n            \"endpoint\": \"/api/v1/restaurants?lat=4.6043283503023185&lng=181\",\n            \"method\": \"GET\",\n            \"status_code\": 400,\n            \"created_at\": \"2025-05-10T14:43:43.998Z\"\n        }\n    ],\n    \"totalItems\": 17,\n    \"currentPage\": 1,\n    \"limit\": 10,\n    \"totalPages\": 2\n}"
+						}
+					]
+				},
+				{
+					"name": "(Logout) Get my transactions in a date range",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 401\", function () {",
+									"    pm.expect(pm.response.to.have.status(401));",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - message and statusCode\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.message).to.exist;",
+									"  pm.expect(responseData.statusCode).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Message is a non-empty string\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token_user_1}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transactions/me?startDate=2025-05-01&endDate=2026-05-01",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions",
+								"me"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-05-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-05-01"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Logout) Get my transactions in a date range",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/transactions/me?startDate=2025-05-01&endDate=2026-05-01",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"transactions",
+										"me"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2025-05-01"
+										},
+										{
+											"key": "endDate",
+											"value": "2026-05-01"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "43"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2b-dGnJzt6gv1nJjX6DJ9RztDWptng\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:57:28 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthorized\",\n    \"statusCode\": 401\n}"
+						}
+					]
+				},
+				{
+					"name": "(Unauthenticated) Get my transactions in a date range",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 401\", function () {",
+									"    pm.expect(pm.response.to.have.status(401));",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - message and statusCode\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.message).to.exist;",
+									"  pm.expect(responseData.statusCode).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Message is a non-empty string\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/transactions/me?startDate=2025-05-01&endDate=2026-05-01",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions",
+								"me"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-05-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2026-05-01"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "(Unauthenticated) Get my transactions in a date range",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/v1/transactions/me?startDate=2025-05-01&endDate=2026-05-01",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"v1",
+										"transactions",
+										"me"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2025-05-01"
+										},
+										{
+											"key": "endDate",
+											"value": "2026-05-01"
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "43"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2b-dGnJzt6gv1nJjX6DJ9RztDWptng\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 May 2025 14:55:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthorized\",\n    \"statusCode\": 401\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api/v1",
+			"type": "string"
+		}
+	]
+}
