@@ -35,7 +35,7 @@ Recuerda seguir las mejores prácticas de ingeniería. Prestamos especial atenci
 
 1. [Clona el repositorio](https://github.com/Sofiav014/api-restaurants-nearby.git)
 
-2. Ubícate en la carpeta raiz del proyecto
+2. Ubícate en la carpeta raíz del proyecto
 
 3. Crea un archivo `.env` con las siguientes variables:
 
@@ -61,7 +61,7 @@ Recuerda seguir las mejores prácticas de ingeniería. Prestamos especial atenci
 > [!NOTE]  
 > Los valores seran enviados por correo
 
-5. Ejecuta el siguente comando
+5. Ejecuta el siguiente comando
 
    ```shell
    docker compose up -d
@@ -96,7 +96,7 @@ cd api #si no estabas en la carpeta
 npm run test
 ```
 
-Si se quiere ejecutar las pruebas y saber su covertura, se debe ejecutar el siguiente comando:
+Si se quiere ejecutar las pruebas y saber su cobertura, se debe ejecutar el siguiente comando:
 
 ```shell
 npm run test:cov
@@ -104,12 +104,12 @@ npm run test:cov
 
 ### Pruebas de Postman
 
-Puedes descargar la colección que se encuentra en `api/collections/Prueba_Backend_Engineer_Tyba.postman_collection.json` y ejecutarla manualmente en tu aplicacion de postman
+Puedes descargar la colección que se encuentra en `api/collections/Prueba_Backend_Engineer_Tyba.postman_collection.json` y ejecutarla manualmente en tu aplicación de Postman.
 
 > [!IMPORTANT]  
-> Si la variable de entorno `baseUrl` no esta inicializada, inicializala con `http://localhost:3000/api/v1`
+> Si la variable de entorno `baseUrl` no está inicializada, inicializala con `http://localhost:3000/api/v1`
 
-Tambien las puedes ejecutar con el siguiente comando:
+También las puedes ejecutar con el siguiente comando:
 
 ```shell
 npm run test:newman
